@@ -135,3 +135,26 @@ function majHistorique() {
     historiqueBody.innerHTML += row;
   });
 }
+
+// --- Gestion automatique du changement de jour ---
+const aujourdHui = new Date().toLocaleDateString("fr-FR");
+const derniereDate = localStorage.getItem("derniereDate");
+
+// Si la date a changé, on enregistre automatiquement la journée précédente
+if (derniereDate && derniereDate !== aujourdHui && consommation.length > 0) {
+  const total = consommation.reduce((sum, item) => sum + item.points, 0);
+  const reserveRestante = reserve;
+
+  historique.push({ date: derniereDate, total, reserveRestante });
+  if (historique.length > 7) historique.shift();
+
+  consommation = [];
+  pointsJour = 0;
+  reserve = 21;
+  sauvegarder();
+  majTableau();
+  majResume();
+  majHistorique();
+}
+
+localStorage.setItem("derniereDate", aujourdHui);
